@@ -20,19 +20,21 @@ var mappingConfig = new MapperConfiguration(mc =>
 });
 IMapper mapper = mappingConfig.CreateMapper();
 
-//var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 // Add services to the container.
 builder.Services.AddScoped<AppiLogginFilter>();
 
+//Adicionando Middleware Mapper para execução do AutoMapper
 builder.Services.AddSingleton(mapper);
 
 builder.Services.AddControllers().AddJsonOptions(options => 
 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
+    //Habilitando documentação no Swagger
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
@@ -40,9 +42,11 @@ builder.Services.AddSwaggerGen(options =>
         Description = "An ASP.NET Core Web API catalago de produtos"
     });
 
+    //Gerar documentação no Swagger a partir dos comentários da App
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
+    //Definições de seguranção para autenticação usando o Bearer para exibir no Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
         Name = "Authorization",
@@ -71,8 +75,10 @@ builder.Services.AddSwaggerGen(options =>
             });
 });
  
+//Pegando a string de conexão do banco de dados no arquivo de configuração.
 string? mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+//Fazendo a conexão com o banco de dados e inserido no Context para executar acessos ao banco de dados.
 builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseMySql(mySqlConnection,
 ServerVersion.AutoDetect(mySqlConnection)));
@@ -81,8 +87,10 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+//Adicionando o Middleware para criar a UnitOfWork para encapsular todos os métodos CRUD da App
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+//Adicionando o Middleware de autenticação na App usando Jwt
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => 
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
@@ -97,6 +105,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            }
         );
 
+//Adicionando o Middleware para controle de versão da API
 //builder.Services.AddApiVersioning(o =>
 //{
 //    o.AssumeDefaultVersionWhenUnspecified = true;
@@ -111,7 +120,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //    o.SubstituteApiVersionInUrl = true;
 // });
 
-
+//Adicionando o Middlewate para criar o Log em arquivo txt
 //builder.Logging.AddProvider(
 //    new CustomLoggerProvider(
 //        new CustomLoggerProviderConfiguration 
@@ -121,14 +130,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //    )
 // );;
 
+//Adicionando o Middleware CORS para possibilitar acesso externo à API
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("EnableCORS", b => 
-    b.AllowAnyOrigin()
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .Build()
-    );
+    options.AddPolicy("EnableCORS", b =>
+    {
+        b.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .Build();
+    });
 });
 
 var app = builder.Build();

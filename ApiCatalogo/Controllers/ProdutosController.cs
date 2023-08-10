@@ -4,18 +4,18 @@ using ApiCatalogo.Models;
 using ApiCatalogo.Pagination;
 using ApiCatalogo.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace ApiCatalogo.Controllers;
 
-[Authorize(AuthenticationSchemes = "Bearer")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
 [ApiController]
-//[EnableCors("PermitirApiRequest")]
 [Produces("application/json")]
+//[EnableQuery]
 public class ProdutosController : ControllerBase
 {
     private string menssagem = "Ocorreu um erro na operação! Segue o erro: ";

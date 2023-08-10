@@ -10,23 +10,24 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ApiCatalogo.Controllers;
 
-//[Authorize(AuthenticationSchemes = "Bearer")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
 [ApiController]
-//[EnableCors("PermitirApiRequest")]
 [Produces("application/json")]
+//[EnableQuery]
 public class CategoriasController : ControllerBase
 {
     private readonly string menssagem = "Ocorreu um erro na operação! Segue o erro: ";
 
     private readonly IUnitOfWork _uof;
 
-    //private readonly IConfiguration _configuration;
+    //private readonly IConfiguration _configuration; -- comentei pq fiz um teste para buscar daddos do arquivo de configuração appsetting.json
 
-    //private readonly ILogger _logger;
+    //private readonly ILogger _logger; -- Comentei pq fiz um teste para criar log em arquivo
 
     private readonly IMapper _mapper;
 
@@ -97,7 +98,6 @@ public class CategoriasController : ControllerBase
     /// <returns>retorna uma lista de categorias</returns>
     /// <remarks>retorna uma lista de categorias</remarks>
     [HttpGet]
-    //[EnableCors("PermitirApiRequest")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get([FromQuery]CategoriasParemeters categoriasParemeters)
     {
@@ -133,13 +133,13 @@ public class CategoriasController : ControllerBase
     /// Retornar uma lista de categorias com o ID informado
     /// </summary>
     /// <param name="id">id da categoria</param>
-    /// <returns>retorna a categoria do ID informado</returns>
+    /// <returns>retorna a categoria do id informado</returns>
+    /// <remarks>retorna a categoria do id informado</remarks>
     [HttpGet("{id:int}", Name ="ObterCategoria")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(CategoriaDTO), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(CategoriaDTO), StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
-    //[EnableCors("PermitirApiRequest")]
     public async Task<ActionResult<Categoria>> Get(int id) 
     {
         var categoria = new Categoria();
@@ -207,7 +207,12 @@ public class CategoriasController : ControllerBase
         
     }
 
-
+    /// <summary>
+    /// Método para alterar dados de categoria
+    /// </summary>
+    /// <param name="id">id da categoria</param>
+    /// <param name="categoriaDto">dados da categoria</param>
+    /// <returns>retorna os dados da categoria alterada</returns>
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(CategoriaDTO), StatusCodes.Status400BadRequest)]
@@ -237,6 +242,11 @@ public class CategoriasController : ControllerBase
         
     }
 
+    /// <summary>
+    /// Método para excluir categoria pelo id
+    /// </summary>
+    /// <param name="id">id da categoria</param>
+    /// <returns>retorna um ActionResult Ok200</returns>
     [HttpDelete("{id:int}")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
     public async Task<ActionResult> Delete(int id)
