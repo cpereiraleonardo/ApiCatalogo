@@ -121,14 +121,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //    )
 // );;
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy(name: MyAllowSpecificOrigins,
-//         policy => policy
-//        .WithOrigins("https://www.apirequest.io/")
-//        .WithMethods("GET")
-//     );
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("EnableCORS", b => 
+    b.AllowAnyOrigin()
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .Build()
+    );
+});
 
 var app = builder.Build();
 
@@ -144,7 +145,7 @@ if (app.Environment.IsDevelopment())
 app.ConfigureExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
-//app.UseCors(MyAllowSpecificOrigins);
+app.UseCors("EnableCORS");
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
