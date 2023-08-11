@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.OData;
+using ApiCatalogo.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
 var mappingConfig = new MapperConfiguration(mc =>
@@ -90,6 +92,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 //Adicionando o Middleware para criar a UnitOfWork para encapsular todos os métodos CRUD da App
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+
 //Adicionando o Middleware de autenticação na App usando Jwt
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => 
@@ -142,8 +145,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-var app = builder.Build();
 
+
+builder.Services.AddControllers().AddOData(options => options.Select().Filter().OrderBy().Count().Expand());
+
+
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -153,10 +160,14 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiCatalogo");
     });
 }
+
+//infelizmente esta dando um conflito com a UnitOfWork e não estou conseguindo resolver o problema.
+//app.UseMiddleware<TesteGraphQLMiddleware>();
 app.ConfigureExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseCors("EnableCORS");
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

@@ -7,15 +7,16 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Newtonsoft.Json;
 
 namespace ApiCatalogo.Controllers;
 
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
 [ApiController]
 [Produces("application/json")]
-//[EnableQuery]
+[EnableQuery]
 public class ProdutosController : ControllerBase
 {
     private string menssagem = "Ocorreu um erro na operação! Segue o erro: ";

@@ -17,7 +17,7 @@ public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
          .ToPagedList(Get()
          .OrderBy(on => on.CategoriaId),
          categoriasParemeters.PageNumber,
-         categoriasParemeters.PageSize); ;
+         categoriasParemeters.PageSize);
     }
 
     public async Task<PagedList<Categoria>> GetCategoriasProduto(CategoriasParemeters categoriasParemeters)

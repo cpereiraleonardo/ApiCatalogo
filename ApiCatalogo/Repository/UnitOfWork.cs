@@ -4,8 +4,8 @@ namespace ApiCatalogo.Repository;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private ProdutoRepository? _produtoRepository;
-    private CategoriaRepository? _categoriaRepository;
+    private ProdutoRepository _produtoRepository;
+    private CategoriaRepository _categoriaRepository;
     public AppDbContext _context;
     
 
@@ -18,7 +18,7 @@ public class UnitOfWork : IUnitOfWork
     {
         get 
         { 
-            return _produtoRepository ??= new ProdutoRepository(_context); 
+            return _produtoRepository ?? new ProdutoRepository(_context); 
         }
     }
 
@@ -26,7 +26,7 @@ public class UnitOfWork : IUnitOfWork
     {
         get
         {
-            return _categoriaRepository ??= new CategoriaRepository(_context);
+            return _categoriaRepository ?? new CategoriaRepository(_context);
         }
     }
 
